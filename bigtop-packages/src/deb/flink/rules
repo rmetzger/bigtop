@@ -28,13 +28,15 @@ export DH_OPTIONS
 override_dh_auto_build:
 	bash debian/do-component-build
 
+svcs=jobmanager taskmanager
 
-#$(svcs): debian/init.d.tmpl
-#	sh $< debian/$@.svc deb debian/$@.init
-#	touch $@
+$(svcs): debian/init.d.tmpl
+	sh $< debian/$@.svc deb debian/$@.init
+	touch $@
 
 override_dh_auto_install:
-	sh -x debian/install_flink.sh \
-	--build-dir=`pwd`/flink-dist/target/flink-1.0.0-bin/flink-1.0.0 \
+	bash -x debian/install_flink.sh \
+	--build-dir=`pwd` \
 	--doc-dir=/usr/share/doc/flink \
+	--source-dir=debian \
 	--prefix=debian/tmp

@@ -14,11 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -ex
+set -e
 
+case "$1" in
+    configure)
+        # Install config alternatives
+        update-alternatives  --install /etc/flink/conf flink-conf /etc/flink/conf.dist 30
+        chown -R flink:flink /var/log/flink /var/lib/flink /var/run/flink
+    ;;
 
-#load versions
-. `dirname $0`/bigtop.bom
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
 
-# Use Maven to build Flink from source
-mvn install $FLINK_BUILD_OPTS -Drat.skip=true -DskipTests -Dhadoop.version=$HADOOP_VERSION "$@" 
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#

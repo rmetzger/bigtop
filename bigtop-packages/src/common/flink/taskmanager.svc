@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TYPE="worker"
+TYPE="taskmanager"
 DAEMON="flink-${TYPE}"
 DESC="Flink ${TYPE}"
 EXEC_PATH="/usr/lib/flink/bin/flink-daemon.sh"
 WORKING_DIR="/var/lib/flink"
 DAEMON_FLAGS="taskmanager"
-SVC_USER="root"
+SVC_USER="flink"
 CONF_DIR="/etc/flink/conf"
 PIDFILE="/var/run/flink/${DAEMON}.pid"
 
@@ -39,18 +39,10 @@ start() {
 
     LOG_FILE=/var/log/flink/${DAEMON}.out
 
-    if [ -f $CONF_DIR/flink-env.sh ]; then
-        . $CONF_DIR/flink-env.sh
-    fi
-
-    if [ "$FLINK_MASTER_IP" = "" ]; then
-        FLINK_MASTER_IP=`hostname`
-    fi
-
 
     sudo /bin/bash -c "nohup nice -n 0 \
         ${EXEC_PATH} start ${DAEMON_FLAGS} --configDir ${CONF_DIR} \
-        > $LOG_FILE 2>&1 & "
+        > $LOG_FILE 2>&1 & "'echo $!' > "$PIDFILE"
 
     sleep 3
 
@@ -60,9 +52,9 @@ start() {
    if [ $RETVAL -eq $STATUS_RUNNING ]; then
     touch $LOCKFILE
     log_success_msg "Started ${DESC} (${DAEMON}): "
-  else
+   else
     log_failure_msg "Failed to start ${DESC}. Return value: $RETVAL"
-  fi
+   fi
 
     return $RETVAL
 }
