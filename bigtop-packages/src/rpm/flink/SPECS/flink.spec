@@ -110,18 +110,22 @@ sh -x %{SOURCE2} --prefix=$RPM_BUILD_ROOT --source-dir=$RPM_SOURCE_DIR --build-d
 for service in %{flink_services}
 do
     # Install init script
-    init_file=$RPM_BUILD_ROOT/%{initd_dir}/%{flink_name}-${service}
-    bash %{SOURCE3} $RPM_SOURCE_DIR/%{flink_name}-${service}.svc rpm $init_file
+    init_file=$RPM_BUILD_ROOT/%{initd_dir}/${service}
+    bash %{SOURCE3} $RPM_SOURCE_DIR/${service}.svc rpm $init_file
 done
 
 
 %preun
 for service in %{flink_services}; do
-  /sbin/service %{flink_name}-${service} status > /dev/null 2>&1
+  /sbin/service ${service} status > /dev/null 2>&1
   if [ $? -eq 0 ]; then
-    /sbin/service %{flink_name}-${service} stop > /dev/null 2>&1
+    /sbin/service ${service} stop > /dev/null 2>&1
   fi
 done
+
+%pre
+getent group flink >/dev/null || groupadd -r flink
+getent passwd flink >/dev/null || useradd -c "Flink" -s /sbin/nologin -g flink -r -d %{lib_flink} flink 2> /dev/null || :
 
 
 %post
@@ -134,10 +138,11 @@ done
 %config(noreplace) %{config_flink}.dist
 
 %dir %{_sysconfdir}/%{flink_name}
-%config(noreplace) %{initd_dir}/%{flink_name}-master
-%config(noreplace) %{initd_dir}/%{flink_name}-worker
-%doc %{doc_flink}
-%attr(0755,root,root) %{var_run_flink}
-%attr(0755,root,root) %{var_log_flink}
+%config(noreplace) %{initd_dir}/jobmanager
+%config(noreplace) %{initd_dir}/taskmanager
+#%doc %{doc_flink}
+%attr(0755,flink,flink) %{var_run_flink}
+%attr(0755,flink,flink) %{var_log_flink}
+%attr(0767,flink,flink) /var/log/flink-cli
 %{lib_flink}
 %{bin_flink}/flink
