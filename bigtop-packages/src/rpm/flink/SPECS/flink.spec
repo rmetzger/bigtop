@@ -19,8 +19,7 @@
 %define etc_flink /etc/%{flink_name}
 %define config_flink %{etc_flink}/conf
 %define man_dir %{_mandir}
-%define flink_services master worker
-%define var_lib_flink /var/lib/%{flink_name}
+%define flink_services jobmanager taskmanager
 %define var_run_flink /var/run/%{flink_name}
 %define var_log_flink /var/log/%{flink_name}
 
@@ -48,8 +47,8 @@ Source0: flink-%{flink_base_version}.tar.gz
 Source1: do-component-build
 Source2: install_flink.sh
 Source3: init.d.tmpl
-Source4: flink-master.svc
-Source5: flink-worker.svc
+Source4: jobmanager.svc
+Source5: taskmanager.svc
 Source6: bigtop.bom
 Requires: bigtop-utils >= 0.7
 Requires(preun): /sbin/service
@@ -104,7 +103,7 @@ bash $RPM_SOURCE_DIR/do-component-build
 %install
 %__rm -rf $RPM_BUILD_ROOT
 
-sh -x %{SOURCE2} --prefix=$RPM_BUILD_ROOT --doc-dir=%{doc_flink} --build-dir=%{build_flink}
+sh -x %{SOURCE2} --prefix=$RPM_BUILD_ROOT --source-dir=$RPM_SOURCE_DIR --build-dir=`pwd`/build-target
 
 
 
@@ -138,7 +137,6 @@ done
 %config(noreplace) %{initd_dir}/%{flink_name}-master
 %config(noreplace) %{initd_dir}/%{flink_name}-worker
 %doc %{doc_flink}
-%attr(0755,root,root) %{var_lib_flink}
 %attr(0755,root,root) %{var_run_flink}
 %attr(0755,root,root) %{var_log_flink}
 %{lib_flink}
