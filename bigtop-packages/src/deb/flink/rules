@@ -36,7 +36,6 @@ $(svcs): debian/init.d.tmpl
 
 override_dh_auto_install:
 	bash -x debian/install_flink.sh \
-	--build-dir=`pwd` \
-	--doc-dir=/usr/share/doc/flink \
+	--build-dir=`pwd`/build-target \
 	--source-dir=debian \
 	--prefix=debian/tmp

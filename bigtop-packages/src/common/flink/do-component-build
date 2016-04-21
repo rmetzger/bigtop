@@ -21,4 +21,6 @@ set -ex
 . `dirname $0`/bigtop.bom
 
 # Use Maven to build Flink from source
-mvn install $FLINK_BUILD_OPTS -Drat.skip=true -DskipTests -Dhadoop.version=$HADOOP_VERSION "$@" 
+#SKIP FOR TESTING mvn install $FLINK_BUILD_OPTS -Drat.skip=true -DskipTests -Dhadoop.version=$HADOOP_VERSION "$@" 
+
+cp -r /home/robert/flink/* .

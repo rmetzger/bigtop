@@ -20,7 +20,7 @@ case "$1" in
     configure)
         # Install config alternatives
         update-alternatives  --install /etc/flink/conf flink-conf /etc/flink/conf.dist 30
-        chown -R flink:flink /var/log/flink /var/lib/flink /var/run/flink
+        chown -R flink:flink /var/log/flink /var/run/flink
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

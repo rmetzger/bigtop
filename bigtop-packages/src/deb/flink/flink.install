@@ -3,4 +3,5 @@
 /usr/lib/flink/lib
 /usr/lib/flink/bin
 /usr/bin
-/usr/share/doc/flink
+/var/log/flink
+/var/run/flink

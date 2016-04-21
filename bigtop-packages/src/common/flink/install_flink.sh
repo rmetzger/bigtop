@@ -104,7 +104,6 @@ install -d -m 0755 $PREFIX/$LIB_DIR/lib
 install -d -m 0755 $PREFIX/$LIB_DIR/examples
 install -d -m 0755 $PREFIX/$LIB_DIR/resources
 install -d -m 0755 $PREFIX/$CONF_DIR
-install -d -m 0755 $PREFIX/var/lib/flink
 install -d -m 0755 $PREFIX/var/log/flink
 install -d -m 0755 $PREFIX/var/run/flink
 
@@ -112,6 +111,8 @@ cp -ra ${BUILD_DIR}/lib/* $PREFIX/${LIB_DIR}/lib/
 cp -a ${BUILD_DIR}/bin/* $PREFIX/${LIB_DIR}/bin/
 # delete Windows start scripts
 rm -rf $PREFIX/${LIB_DIR}/bin/*.cmd
+# remove log directory
+rm -rf  $PREFIX/${LIB_DIR}/log
 
 # Copy the configuration files
 cp -a ${BUILD_DIR}/conf/* $PREFIX/$CONF_DIR
@@ -130,10 +131,11 @@ cat > $PREFIX/$BIN_DIR/flink <<EOF
 # Autodetect JAVA_HOME if not defined
 . /usr/lib/bigtop-utils/bigtop-detect-javahome
 
-export HADOOP_HOME=${HADOOP_HOME:-/usr/lib/hadoop}
-export HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-/etc/hadoop/conf}
-export FLINK_HOME=${FLINK_HOME:-$INSTALLED_LIB_DIR}
-export FLINK_CONF_DIR=${FLINK_CONF_DIR:-$CONF_DIR}
+export HADOOP_HOME=\${HADOOP_HOME:-/usr/lib/hadoop}
+export HADOOP_CONF_DIR=\${HADOOP_CONF_DIR:-/etc/hadoop/conf}
+export FLINK_HOME=\${FLINK_HOME:-$INSTALLED_LIB_DIR}
+export FLINK_CONF_DIR=\${FLINK_CONF_DIR:-$CONF_DIR}
+export FLINK_LOG_DIR=\${FLINK_LOG_DIR:-/var/log/flink}
 
 exec $INSTALLED_LIB_DIR/bin/flink "\$@"
 EOF
